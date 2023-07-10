@@ -81,27 +81,6 @@ data_bigvgan/
 ## Inference
 
 
-#
-
-<div align="center">
-<h1> Singing Voice Conversion based on Whisper & neural source-filter BigVGAN </h1>
-
-<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/PlayVoice/lora-svc">
-<img alt="GitHub forks" src="https://img.shields.io/github/forks/PlayVoice/lora-svc">
-<img alt="GitHub issues" src="https://img.shields.io/github/issues/PlayVoice/lora-svc">
-<img alt="GitHub" src="https://img.shields.io/github/license/PlayVoice/lora-svc">
-</div>
-
-```
-Black technology based on the three giants of artificial intelligence:
-
-OpenAI's whisper, 680,000 hours in multiple languages
-
-Nvidia's bigvgan, anti-aliasing for speech generation
-
-Microsoft's adapter, high-efficiency for fine-tuning
-```
-
 ## Source of code and References
 
 https://github.com/nii-yamagishilab/project-NN-Pytorch-scripts/tree/master/project/01-nsf
