@@ -1,3 +1,0 @@
-Path for:
-
-    medium.pt

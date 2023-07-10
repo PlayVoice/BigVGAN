@@ -1,4 +1,12 @@
 <div align="center">
+<h1> Neural Source-Filter BigVGAN </h1>
+
+code is adapted for PlayVoice/lora-svc [WIP]
+
+</div>
+
+
+<div align="center">
 <h1> Singing Voice Conversion based on Whisper & neural source-filter BigVGAN </h1>
 
 <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/PlayVoice/lora-svc">
@@ -16,11 +24,6 @@ Nvidia's bigvgan, anti-aliasing for speech generation
 
 Microsoft's adapter, high-efficiency for fine-tuning
 ```
-
-use pretrain model to fine tune
-
-https://user-images.githubusercontent.com/16432329/231021007-6e34cbb4-e256-491d-8ab6-5ce4e822da21.mp4
-
 
 ## Dataset preparation
 
@@ -102,13 +105,6 @@ dataset_raw
 
 ```shell
 data_svc/
-└── waves-16k
-│    └── speaker0
-│    │      ├── 000001.wav
-│    │      └── 000xxx.wav
-│    └── speaker1
-│           ├── 000001.wav
-│           └── 000xxx.wav
 └── waves-32k
 │    └── speaker0
 │    │      ├── 000001.wav
@@ -123,23 +119,14 @@ data_svc/
 │    └── speaker1
 │           ├── 000001.pit.npy
 │           └── 000xxx.pit.npy
-└── whisper
-│    └── speaker0
-│    │      ├── 000001.ppg.npy
-│    │      └── 000xxx.ppg.npy
-│    └── speaker1
-│           ├── 000001.ppg.npy
-│           └── 000xxx.ppg.npy
-└── speaker
-│    └── speaker0
-│    │      ├── 000001.spk.npy
-│    │      └── 000xxx.spk.npy
-│    └── speaker1
-│           ├── 000001.spk.npy
-│           └── 000xxx.spk.npy
-└── singer
-    ├── speaker0.spk.npy
-    └── speaker1.spk.npy
+└── mel
+     └── speaker0
+     │      ├── 000001.mel.pt
+     │      └── 000xxx.mel.pt
+     └── speaker1
+            ├── 000001.mel.pt
+            └── 000xxx.mel.pt
+
 ```
 
 ## Train
@@ -163,7 +150,6 @@ data_svc/
 
     > tensorboard --logdir logs/
 
-![final_model_loss](https://github.com/PlayVoice/lora-svc/assets/16432329/60b6f141-e20e-4a13-ac98-669efbf10472)
 
 ## Inference
 
@@ -204,23 +190,13 @@ data_svc/
     | name | config path | model path | speaker | wave input | wave ppg | wave pitch | pitch shift |
 
 ## Source of code and References
-[Adapter-Based Extension of Multi-Speaker Text-to-Speech Model for New Speakers](https://arxiv.org/abs/2211.00585)
-
-[AdaSpeech: Adaptive Text to Speech for Custom Voice](https://arxiv.org/pdf/2103.00993.pdf)
 
 https://github.com/nii-yamagishilab/project-NN-Pytorch-scripts/tree/master/project/01-nsf
 
 https://github.com/mindslab-ai/univnet [[paper]](https://arxiv.org/abs/2106.07889)
 
-https://github.com/openai/whisper/ [[paper]](https://arxiv.org/abs/2212.04356)
-
 https://github.com/NVIDIA/BigVGAN [[paper]](https://arxiv.org/abs/2206.04658)
 
-## Contributor
-
-<a href="https://github.com/PlayVoice/lora-svc/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=PlayVoice/lora-svc" />
-</a>
 
 ## Encouragement
 If you adopt the code or idea of this project, please list it in your project, which is the basic criterion for the continuation of the open source spirit.
