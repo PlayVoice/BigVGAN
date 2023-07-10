@@ -54,19 +54,17 @@ class FeatureFromDisk(Dataset):
 
     def _filter(self):
         items_new = []
-        for wavpath, pitch, ppg, spk in self.items:
+        for wavpath, pitch, mel in self.items:
             if not os.path.isfile(wavpath):
                 continue
             if not os.path.isfile(pitch):
                 continue
-            if not os.path.isfile(ppg):
-                continue
-            if not os.path.isfile(spk):
+            if not os.path.isfile(mel):
                 continue
             sr, audio = read_wav_np(wavpath)
             assert sr == self.hp.audio.sampling_rate
             if len(audio) > self.hp.audio.segment_length * 2:
-                items_new.append([wavpath, pitch, ppg, spk])
+                items_new.append([wavpath, pitch, mel)
         self.items = items_new
 
     def __len__(self):
@@ -79,36 +77,32 @@ class FeatureFromDisk(Dataset):
         item = self.items[idx]
         wav = item[0]
         pit = item[1]
-        ppg = item[2]
-        spk = item[3]
+        mel = item[2]
 
         sr, wav = read_wav_np(wav)
         wav = torch.from_numpy(wav).unsqueeze(0)
         pit = np.load(pit)
-        ppg = np.load(ppg)
-        ppg = np.repeat(ppg, 2, 0)  # 20ms -> 10ms * 2
-        spk = np.load(spk)
+        mel = np.load(mel)
 
-        spk = torch.FloatTensor(spk)
         pit = torch.FloatTensor(pit)
-        ppg = torch.FloatTensor(ppg)
+        mel = torch.FloatTensor(mel)
 
         len_pit = pit.size()[0]
-        len_ppg = ppg.size()[0]
-        len_min = min(len_pit, len_ppg)
+        len_mel = mel.size()[0]
+        len_min = min(len_pit, len_mel)
         len_wav = len_min * self.hp.audio.hop_length
 
         pit = pit[:len_min]
-        ppg = ppg[:len_min, :]
+        mel = mel[:len_min, :]
         wav = wav[:, :len_wav]
         if self.train:
-            max_frame_start = ppg.size(0) - self.frame_segment_length - 1
+            max_frame_start = mel.size(0) - self.frame_segment_length - 1
             frame_start = random.randint(0, max_frame_start)
             frame_end = frame_start + self.frame_segment_length
-            ppg = ppg[frame_start:frame_end, :]
+            mel = mel[frame_start:frame_end, :]
             pit = pit[frame_start:frame_end]
 
             wav_start = frame_start * self.hp.audio.hop_length
             wav_len = self.hp.audio.segment_length
             wav = wav[:, wav_start:wav_start + wav_len]
-        return spk, ppg, pit, wav
+        return mel, pit, wav

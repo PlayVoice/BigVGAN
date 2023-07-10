@@ -12,16 +12,14 @@ if __name__ == "__main__":
             for file in os.listdir(f"./{rootPath}/{spks}"):
                 if file.endswith(".wav"):
                     file = file[:-4]
-                    path_spk = f"./data_svc/speaker/{spks}/{file}.spk.npy"
                     path_wave = f"./data_svc/waves-32k/{spks}/{file}.wav"
                     path_pitch = f"./data_svc/pitch/{spks}/{file}.pit.npy"
-                    path_whisper = f"./data_svc/whisper/{spks}/{file}.ppg.npy"
-                    assert os.path.isfile(path_spk), path_spk
+                    path_mel = f"./data_svc/mel/{spks}/{file}.mel.npy"
+
                     assert os.path.isfile(path_wave), path_wave
                     assert os.path.isfile(path_pitch), path_pitch
-                    assert os.path.isfile(path_whisper), path_whisper
-                    all_items.append(
-                        f"{path_wave}|{path_pitch}|{path_whisper}|{path_spk}")
+                    assert os.path.isfile(path_mel), path_mel
+                    all_items.append(f"{path_wave}|{path_pitch}|{path_mel}")
 
     random.shuffle(all_items)
     valids = all_items[:10]

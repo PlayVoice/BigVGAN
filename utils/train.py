@@ -137,15 +137,14 @@ def train(rank, args, chkpt_path, hp, hp_str):
         else:
             loader = trainloader
 
-        for spk, ppg, pit, audio in loader:
-            spk = spk.to(device)
-            ppg = ppg.to(device)
+        for mel, pit, audio in loader:
+            mel = mel.to(device)
             pit = pit.to(device)
             audio = audio.to(device)
 
             # generator
             optim_g.zero_grad()
-            fake_audio = model_g(spk, ppg, pit)
+            fake_audio = model_g(mel, pit)
 
             # Mel Loss
             mel_fake = stft.mel_spectrogram(fake_audio.squeeze(1))

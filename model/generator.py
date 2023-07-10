@@ -12,41 +12,6 @@ from .nsf import SourceModuleHnNSF
 from .bigv import init_weights, AMPBlock, SnakeAlias
 
 
-class SpeakerAdapter(nn.Module):
-
-    def __init__(self,
-                 speaker_dim,
-                 adapter_dim,
-                 epsilon=1e-5
-                 ):
-        super(SpeakerAdapter, self).__init__()
-        self.speaker_dim = speaker_dim
-        self.adapter_dim = adapter_dim
-        self.epsilon = epsilon
-        self.W_scale = nn.Linear(self.speaker_dim, self.adapter_dim)
-        self.W_bias = nn.Linear(self.speaker_dim, self.adapter_dim)
-        self.reset_parameters()
-
-    def reset_parameters(self):
-        torch.nn.init.constant_(self.W_scale.weight, 0.0)
-        torch.nn.init.constant_(self.W_scale.bias, 1.0)
-        torch.nn.init.constant_(self.W_bias.weight, 0.0)
-        torch.nn.init.constant_(self.W_bias.bias, 0.0)
-
-    def forward(self, x, speaker_embedding):
-        x = x.transpose(1, -1)
-        mean = x.mean(dim=-1, keepdim=True)
-        var = ((x - mean) ** 2).mean(dim=-1, keepdim=True)
-        std = (var + self.epsilon).sqrt()
-        y = (x - mean) / std
-        scale = self.W_scale(speaker_embedding)
-        bias = self.W_bias(speaker_embedding)
-        y *= scale.unsqueeze(1)
-        y += bias.unsqueeze(1)
-        y = y.transpose(1, -1)
-        return y
-
-
 class Generator(torch.nn.Module):
     # this is our main BigVGAN model. Applies anti-aliased periodic activation for resblocks.
     def __init__(self, hp):
@@ -54,11 +19,9 @@ class Generator(torch.nn.Module):
         self.hp = hp
         self.num_kernels = len(hp.gen.resblock_kernel_sizes)
         self.num_upsamples = len(hp.gen.upsample_rates)
-        # speaker adaper, 256 should change by what speaker encoder you use
-        self.adapter = nn.ModuleList()
         # pre conv
         self.conv_pre = nn.utils.weight_norm(
-            Conv1d(hp.gen.ppg_channels, hp.gen.upsample_initial_channel, 7, 1, padding=3))
+            Conv1d(hp.gen.mel_channels, hp.gen.upsample_initial_channel, 7, 1, padding=3))
         # nsf
         self.f0_upsamp = torch.nn.Upsample(
             scale_factor=np.prod(hp.gen.upsample_rates))
@@ -67,9 +30,6 @@ class Generator(torch.nn.Module):
         # transposed conv-based upsamplers. does not apply anti-aliasing
         self.ups = nn.ModuleList()
         for i, (u, k) in enumerate(zip(hp.gen.upsample_rates, hp.gen.upsample_kernel_sizes)):
-            # spk
-            self.adapter.append(SpeakerAdapter(
-                256, hp.gen.upsample_initial_channel // (2 ** (i + 1))))
             # print(f'ups: {i} {k}, {u}, {(k - u) // 2}')
             # base
             self.ups.append(
@@ -114,7 +74,7 @@ class Generator(torch.nn.Module):
         # weight initialization
         self.ups.apply(init_weights)
 
-    def forward(self, spk, x, f0, train=True):
+    def forward(self, x, f0, train=True):
         # nsf
         f0 = f0[:, None]
         f0 = self.f0_upsamp(f0).transpose(1, 2)
@@ -130,8 +90,6 @@ class Generator(torch.nn.Module):
         for i in range(self.num_upsamples):
             # upsampling
             x = self.ups[i](x)
-            # adapter
-            x = self.adapter[i](x, spk)
             # nsf
             x_source = self.noise_convs[i](har_source)
             x = x + x_source
@@ -163,9 +121,9 @@ class Generator(torch.nn.Module):
         if inference:
             self.remove_weight_norm()
 
-    def inference(self, spk, ppg, f0):
+    def inference(self, mel, f0):
         MAX_WAV_VALUE = 32768.0
-        audio = self.forward(spk, ppg, f0, False)
+        audio = self.forward(mel, f0, False)
         audio = audio.squeeze()  # collapse all dimension except time axis
         audio = MAX_WAV_VALUE * audio
         audio = audio.clamp(min=-MAX_WAV_VALUE, max=MAX_WAV_VALUE-1)
@@ -184,12 +142,3 @@ class Generator(torch.nn.Module):
         audio = audio.clamp(min=-MAX_WAV_VALUE, max=MAX_WAV_VALUE-1)
         audio = audio.short()
         return audio
-
-    def train_lora(self):
-        print("~~~train_lora~~~")
-        for p in self.parameters():
-           p.requires_grad = False
-        for p in self.adapter.parameters():
-           p.requires_grad = True
-        for p in self.resblocks.parameters():
-           p.requires_grad = True
