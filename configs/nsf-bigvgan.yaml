@@ -23,7 +23,7 @@ audio:
   hop_length: 320 # WARNING: this can't be changed.
   win_length: 1024
   sampling_rate: 32000
-  mel_fmin: 50.0
+  mel_fmin: 40.0
   mel_fmax: 16000.0
 #############################
 gen:

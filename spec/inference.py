@@ -1,28 +1,23 @@
-# Copyright (c) 2022 NVIDIA CORPORATION. 
-#   Licensed under the MIT license.
-
 # Adapted from https://github.com/jik876/hifi-gan under the MIT license.
-#   LICENSE is in incl_licenses directory.
 
 import argparse
 import torch
 import torch.utils.data
 import numpy as np
 from omegaconf import OmegaConf
-from librosa.util import normalize
 from scipy.io.wavfile import read
+from librosa.util import normalize
 from librosa.filters import mel as librosa_mel_fn
 
 
 MAX_WAV_VALUE = 32768.0
 
 
-def load_wav(full_path, sr_target):
-    sampling_rate, data = read(full_path)
-    if sampling_rate != sr_target:
-        raise RuntimeError("Sampling rate of the file {} is {} Hz, but the model requires {} Hz".
-              format(full_path, sampling_rate, sr_target))
-    return data, sampling_rate
+def load_wav_to_torch(full_path):
+    sampling_rate, audio = read(full_path)
+    audio = audio / MAX_WAV_VALUE
+    audio = normalize(audio) * 0.6
+    return torch.FloatTensor(audio.astype(np.float32)), sampling_rate
 
 
 def dynamic_range_compression(x, C=1, clip_val=1e-5):
@@ -63,7 +58,7 @@ def mel_spectrogram(y, n_fft, num_mels, sampling_rate, hop_size, win_size, fmin,
 
     global mel_basis, hann_window
     if fmax not in mel_basis:
-        mel = librosa_mel_fn(sampling_rate, n_fft, num_mels, fmin, fmax)
+        mel = librosa_mel_fn(sr=sampling_rate, n_fft=n_fft, n_mels=num_mels, fmin=fmin, fmax=fmax)
         mel_basis[str(fmax)+'_'+str(y.device)] = torch.from_numpy(mel).float().to(y.device)
         hann_window[str(y.device)] = torch.hann_window(win_size).to(y.device)
 
@@ -82,6 +77,19 @@ def mel_spectrogram(y, n_fft, num_mels, sampling_rate, hop_size, win_size, fmin,
     return spec
 
 
+def mel_spectrogram_file(path, hps):
+    audio, sampling_rate = load_wav_to_torch(path)
+    assert sampling_rate == hps.audio.sampling_rate, f"{sampling_rate} is not {hps.audio.sampling_rate}"
+    audio = audio.unsqueeze(0)
+
+    # match audio length to self.hop_length * n for evaluation
+    if (audio.size(1) % hps.audio.hop_length) != 0:
+        audio = audio[:, :-(audio.size(1) % hps.audio.hop_length)]
+    mel = mel_spectrogram(audio, hps.audio.filter_length, hps.audio.n_mel_channels, hps.audio.sampling_rate,
+                          hps.audio.hop_length, hps.audio.win_length, hps.audio.mel_fmin, hps.audio.mel_fmax, center=False)
+    return mel
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.description = 'please enter embed parameter ...'
@@ -93,17 +101,8 @@ if __name__ == "__main__":
 
     hps = OmegaConf.load(f"./configs/nsf-bigvgan.yaml")
 
-    audio, sampling_rate = load_wav(filename, self.sampling_rate)
-    audio = audio / MAX_WAV_VALUE
-    audio = normalize(audio) * 0.95
-
-    assert sampling_rate == hps.sampling_rate, f("{} SR doesn't match target {} SR".format(sampling_rate, hps.sampling_rate))
-
-    audio = torch.FloatTensor(audio)
-    audio = audio.unsqueeze(0)
-
-    # match audio length to self.hop_size * n for evaluation
-    if (audio.size(1) % hps.hop_size) != 0:
-        audio = audio[:, :-(audio.size(1) % hps.hop_size)]
-    mel = mel_spectrogram(audio, hps.n_fft, hps.num_mels, hps.sampling_rate, hps.hop_size, hps.win_size, hps.fmin, hps.fmax, center=False)
-   # TODO
+    mel = mel_spectrogram_file(args.wav, hps)
+    # TODO
+    mel = torch.squeeze(mel, 0)
+    # [100, length]
+    torch.save(mel, args.mel)

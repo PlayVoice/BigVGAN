@@ -5,16 +5,16 @@ import random
 if __name__ == "__main__":
     os.makedirs("./files/", exist_ok=True)
 
-    rootPath = "./data_svc/waves-32k/"
+    rootPath = "./data_bigvgan/waves-32k/"
     all_items = []
     for spks in os.listdir(f"./{rootPath}"):
         if os.path.isdir(f"./{rootPath}/{spks}"):
             for file in os.listdir(f"./{rootPath}/{spks}"):
                 if file.endswith(".wav"):
                     file = file[:-4]
-                    path_wave = f"./data_svc/waves-32k/{spks}/{file}.wav"
-                    path_pitch = f"./data_svc/pitch/{spks}/{file}.pit.npy"
-                    path_mel = f"./data_svc/mel/{spks}/{file}.mel.npy"
+                    path_wave = f"./data_bigvgan/waves-32k/{spks}/{file}.wav"
+                    path_pitch = f"./data_bigvgan/pitch/{spks}/{file}.pit.npy"
+                    path_mel = f"./data_bigvgan/mel/{spks}/{file}.pt"
 
                     assert os.path.isfile(path_wave), path_wave
                     assert os.path.isfile(path_pitch), path_pitch

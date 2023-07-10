@@ -31,18 +31,15 @@ if __name__ == "__main__":
     parser.description = 'please enter embed parameter ...'
     parser.add_argument("-w", "--wav", help="wav", dest="wav")
     parser.add_argument("-o", "--out", help="out", dest="out")
-    parser.add_argument("-s", "--sr", help="sample rate", dest="sr", type=int)
     parser.add_argument("-t", "--thread_count", help="thread count to process, set 0 to use all cpu cores", dest="thread_count", type=int, default=1)
     args = parser.parse_args()
     print(args.wav)
     print(args.out)
-    print(args.sr)
-    if not os.path.exists(args.out):
-        os.makedirs(args.out)
+
+    os.makedirs(args.out, exist_ok=True)
     wavPath = args.wav
     outPath = args.out
-
-    assert args.sr == 16000 or args.sr == 32000
+    args.sr = 32000  # 32kHz
 
     for spks in os.listdir(wavPath):
         if os.path.isdir(f"./{wavPath}/{spks}"):
