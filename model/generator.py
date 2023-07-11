@@ -83,7 +83,6 @@ class Generator(torch.nn.Module):
         # pre conv
         if train:
             x = x + torch.randn_like(x)     # Perturbation
-        x = torch.transpose(x, 1, -1)       # [B, D, L]
         x = self.conv_pre(x)
         x = x * torch.tanh(F.softplus(x))
 

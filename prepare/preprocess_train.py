@@ -14,7 +14,7 @@ if __name__ == "__main__":
                     file = file[:-4]
                     path_wave = f"./data_bigvgan/waves-32k/{spks}/{file}.wav"
                     path_pitch = f"./data_bigvgan/pitch/{spks}/{file}.pit.npy"
-                    path_mel = f"./data_bigvgan/mel/{spks}/{file}.pt"
+                    path_mel = f"./data_bigvgan/mel/{spks}/{file}.mel.pt"
 
                     assert os.path.isfile(path_wave), path_wave
                     assert os.path.isfile(path_pitch), path_pitch

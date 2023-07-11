@@ -12,14 +12,14 @@ from omegaconf import OmegaConf
 def compute_spec(hps, filename, specname):
     spec = mel_spectrogram_file(filename, hps)
     spec = torch.squeeze(spec, 0)
-    print(spec.shape)
+    # print(spec.shape)
     torch.save(spec, specname)
 
 
 def process_file(file):
     if file.endswith(".wav"):
         file = file[:-4]
-        compute_spec(hps, f"{wavPath}/{spks}/{file}.wav", f"{spePath}/{spks}/{file}.pt")
+        compute_spec(hps, f"{wavPath}/{spks}/{file}.wav", f"{spePath}/{spks}/{file}.mel.pt")
 
 def process_files_with_thread_pool(wavPath, spks, max_workers):
     files = os.listdir(f"./{wavPath}/{spks}")

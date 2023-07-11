@@ -64,7 +64,7 @@ class FeatureFromDisk(Dataset):
             sr, audio = read_wav_np(wavpath)
             assert sr == self.hp.audio.sampling_rate
             if len(audio) > self.hp.audio.segment_length * 2:
-                items_new.append([wavpath, pitch, mel)
+                items_new.append([wavpath, pitch, mel])
         self.items = items_new
 
     def __len__(self):
@@ -82,24 +82,24 @@ class FeatureFromDisk(Dataset):
         sr, wav = read_wav_np(wav)
         wav = torch.from_numpy(wav).unsqueeze(0)
         pit = np.load(pit)
-        mel = np.load(mel)
+        mel = torch.load(mel)
 
         pit = torch.FloatTensor(pit)
         mel = torch.FloatTensor(mel)
 
         len_pit = pit.size()[0]
-        len_mel = mel.size()[0]
+        len_mel = mel.size()[1]
         len_min = min(len_pit, len_mel)
         len_wav = len_min * self.hp.audio.hop_length
 
         pit = pit[:len_min]
-        mel = mel[:len_min, :]
+        mel = mel[:, :len_min]
         wav = wav[:, :len_wav]
         if self.train:
-            max_frame_start = mel.size(0) - self.frame_segment_length - 1
+            max_frame_start = mel.size(1) - self.frame_segment_length - 1
             frame_start = random.randint(0, max_frame_start)
             frame_end = frame_start + self.frame_segment_length
-            mel = mel[frame_start:frame_end, :]
+            mel = mel[:, frame_start:frame_end]
             pit = pit[frame_start:frame_end]
 
             wav_start = frame_start * self.hp.audio.hop_length

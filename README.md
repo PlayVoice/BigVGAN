@@ -36,7 +36,7 @@ data_raw
 
     > python prepare/preprocess_f0.py -w data_bigvgan/waves-32k/ -p data_bigvgan/pitch
 
-- 4， extract mel
+- 4， extract mel: [100, length]
 
     > python prepare/preprocess_spec.py -w data_bigvgan/waves-32k/ -s data_bigvgan/mel
 
@@ -50,7 +50,7 @@ data_raw
 
 ```shell
 data_bigvgan/
-|
+│
 └── waves-32k
 │    └── speaker0
 │    │      ├── 000001.wav
@@ -77,6 +77,17 @@ data_bigvgan/
 
 ## Train
 
+- 1， start training
+
+    > python nsf_bigvgan_trainer.py -c configs/nsf_bigvgan.yaml -n nsf_bigvgan
+
+- 2， resume training
+
+    > python nsf_bigvgan_trainer.py -c configs/nsf_bigvgan.yaml -n nsf_bigvgan -p chkpt/nsf_bigvgan/***.pth
+
+- 3， view log
+
+    > tensorboard --logdir logs/
 
 ## Inference
 
