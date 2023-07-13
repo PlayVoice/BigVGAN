@@ -22,7 +22,7 @@ class Discriminator(nn.Module):
 
 
 if __name__ == '__main__':
-    hp = OmegaConf.load('../config/nsf-bigvgan.yaml')
+    hp = OmegaConf.load('../config/nsf_bigvgan.yaml')
     model = Discriminator(hp)
 
     x = torch.randn(3, 1, 16384)

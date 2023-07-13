@@ -89,7 +89,26 @@ data_bigvgan/
 
     > tensorboard --logdir logs/
 
+
 ## Inference
+
+- 1， export inference model
+
+    > python nsf_bigvgan_export.py --config configs/maxgan.yaml --checkpoint_path chkpt/nsf_bigvgan/***.pt
+
+- 2， extract mel
+
+    > python whisper/inference.py -w test.wav -p test.ppg.npy
+
+- 3， extract F0
+
+    > python pitch/inference.py -w test.wav -p test.csv
+
+- 4， infer
+
+    > python nsf_bigvgan_inference.py --config configs/nsf_bigvgan.yaml --model nsf_bigvgan_g.pth --wave test.wav
+
+    > python nsf_bigvgan_inference.py --config configs/nsf_bigvgan.yaml --model nsf_bigvgan_g.pth --ppg test.ppg.npy --pit test.csv
 
 
 ## Source of code and References

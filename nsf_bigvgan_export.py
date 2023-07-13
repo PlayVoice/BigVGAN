@@ -21,12 +21,12 @@ def main(args):
 
     torch.save({
         'model_g': model_g.state_dict(),
-    }, "nsf-bigvgan_g.pth")
+    }, "nsf_bigvgan_g.pth")
 
     torch.save({
         'model_g': model_g.state_dict(),
         'model_d': model_d.state_dict(),
-    }, "nsf-bigvgan_pretrain_32K.pth")
+    }, "nsf_bigvgan_pretrain_32K.pth")
 
 
 if __name__ == '__main__':

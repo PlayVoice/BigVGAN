@@ -28,10 +28,10 @@ def load_bigv_model(checkpoint_path, model):
 
 def main(args):
     if (args.mel == None):
-        args.mel = "bigv_tmp.mel.npy"
+        args.mel = "bigv_tmp.mel.pt"
         print(
-            f"Auto run : python whisper/inference.py -w {args.wave} -p {args.mel}")
-        os.system(f"python whisper/inference.py -w {args.wave} -p {args.mel}")
+            f"Auto run : python spec/inference.py -w {args.wave} -m {args.mel}")
+        os.system(f"python spec/inference.py -w {args.wave} -m {args.mel}")
 
     if (args.pit == None):
         args.pit = "bigv_tmp.pit.csv"
@@ -46,17 +46,16 @@ def main(args):
     model.eval()
     model.to(device)
 
-    mel = np.load(args.mel)
-    mel = torch.FloatTensor(mel)
+    mel = torch.load(args.mel)
 
     pit = load_csv_pitch(args.pit)
     pit = torch.FloatTensor(pit)
 
     len_pit = pit.size()[0]
-    len_mel = mel.size()[0]
+    len_mel = mel.size()[1]
     len_min = min(len_pit, len_mel)
     pit = pit[:len_min]
-    mel = mel[:len_min, :]
+    mel = mel[:, :len_min]
 
     with torch.no_grad():
         mel = mel.unsqueeze(0).to(device)

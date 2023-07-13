@@ -33,7 +33,7 @@ if __name__ == "__main__":
     wavPath = args.wav
     pitPath = args.pit
 
-    hps = OmegaConf.load(f"./configs/nsf-bigvgan.yaml")
+    hps = OmegaConf.load(f"./configs/nsf_bigvgan.yaml")
 
     for spks in os.listdir(wavPath):
         if os.path.isdir(f"./{wavPath}/{spks}"):

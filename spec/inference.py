@@ -4,20 +4,18 @@ import argparse
 import torch
 import torch.utils.data
 import numpy as np
+import librosa
 from omegaconf import OmegaConf
-from scipy.io.wavfile import read
-from librosa.util import normalize
 from librosa.filters import mel as librosa_mel_fn
 
 
 MAX_WAV_VALUE = 32768.0
 
 
-def load_wav_to_torch(full_path):
-    sampling_rate, audio = read(full_path)
-    audio = audio / MAX_WAV_VALUE
-    audio = normalize(audio) * 0.6
-    return torch.FloatTensor(audio.astype(np.float32)), sampling_rate
+def load_wav_to_torch(full_path, sample_rate):
+    wav, _ = librosa.load(full_path, sr=sample_rate)
+    wav = wav / np.abs(wav).max() * 0.6
+    return torch.FloatTensor(wav)
 
 
 def dynamic_range_compression(x, C=1, clip_val=1e-5):
@@ -78,8 +76,7 @@ def mel_spectrogram(y, n_fft, num_mels, sampling_rate, hop_size, win_size, fmin,
 
 
 def mel_spectrogram_file(path, hps):
-    audio, sampling_rate = load_wav_to_torch(path)
-    assert sampling_rate == hps.audio.sampling_rate, f"{sampling_rate} is not {hps.audio.sampling_rate}"
+    audio = load_wav_to_torch(path, hps.audio.sampling_rate)
     audio = audio.unsqueeze(0)
 
     # match audio length to self.hop_length * n for evaluation
@@ -99,7 +96,7 @@ if __name__ == "__main__":
     print(args.wav)
     print(args.mel)
 
-    hps = OmegaConf.load(f"./configs/nsf-bigvgan.yaml")
+    hps = OmegaConf.load(f"./configs/nsf_bigvgan.yaml")
 
     mel = mel_spectrogram_file(args.wav, hps)
     # TODO

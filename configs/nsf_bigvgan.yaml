@@ -54,7 +54,7 @@ dist_config:
 log:
   info_interval: 100
   eval_interval: 1000
-  save_interval: 1000
+  save_interval: 10000
   num_audio: 6
   pth_dir: 'chkpt'
   log_dir: 'logs'
