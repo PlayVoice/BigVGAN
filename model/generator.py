@@ -81,8 +81,8 @@ class Generator(torch.nn.Module):
         har_source = self.m_source(f0)
         har_source = har_source.transpose(1, 2)
         # pre conv
-        if train:
-            x = x + torch.randn_like(x)     # Perturbation
+        # if train:
+        #     x = x + torch.randn_like(x)
         x = self.conv_pre(x)
         x = x * torch.tanh(F.softplus(x))
 

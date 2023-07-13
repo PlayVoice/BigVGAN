@@ -76,7 +76,7 @@ if __name__ == '__main__':
                         help="yaml file for config.")
     parser.add_argument('--model', type=str, required=True,
                         help="path of model for evaluation")
-    parser.add_argument('--wave', type=str, required=True,
+    parser.add_argument('--wave', type=str,
                         help="Path of raw audio.")
     parser.add_argument('--mel', type=str,
                         help="Path of content vector.")

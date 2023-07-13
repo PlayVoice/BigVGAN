@@ -1,7 +1,7 @@
 <div align="center">
 <h1> Neural Source-Filter BigVGAN </h1>
 
-code is adapted for PlayVoice/lora-svc [WIP]
+Just For Fun[WIP]
 
 </div>
 
@@ -43,10 +43,6 @@ data_raw
 - 5， generate training index
 
     > python prepare/preprocess_train.py
-
-- 6， training file debugging
-
-    > python prepare/preprocess_zzz.py -c configs/maxgan.yaml
 
 ```shell
 data_bigvgan/
@@ -98,7 +94,7 @@ data_bigvgan/
 
 - 2， extract mel
 
-    > python whisper/inference.py -w test.wav -p test.ppg.npy
+    > python spec/inference.py -w test.wav -m test.mel.pt
 
 - 3， extract F0
 
@@ -108,7 +104,9 @@ data_bigvgan/
 
     > python nsf_bigvgan_inference.py --config configs/nsf_bigvgan.yaml --model nsf_bigvgan_g.pth --wave test.wav
 
-    > python nsf_bigvgan_inference.py --config configs/nsf_bigvgan.yaml --model nsf_bigvgan_g.pth --ppg test.ppg.npy --pit test.csv
+    or
+
+    > python nsf_bigvgan_inference.py --config configs/nsf_bigvgan.yaml --model nsf_bigvgan_g.pth --mel test.mel.pt --pit test.csv
 
 
 ## Source of code and References
@@ -118,11 +116,3 @@ https://github.com/nii-yamagishilab/project-NN-Pytorch-scripts/tree/master/proje
 https://github.com/mindslab-ai/univnet [[paper]](https://arxiv.org/abs/2106.07889)
 
 https://github.com/NVIDIA/BigVGAN [[paper]](https://arxiv.org/abs/2206.04658)
-
-
-## Encouragement
-If you adopt the code or idea of this project, please list it in your project, which is the basic criterion for the continuation of the open source spirit.
-
-如果你采用了本项目的代码或创意，请在你的项目中列出，这是开源精神得以延续的基本准则。
-
-このプロジェクトのコードやアイデアを採用した場合は、オープンソースの精神が続く基本的なガイドラインであるプロジェクトにリストしてください。
