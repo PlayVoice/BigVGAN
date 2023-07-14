@@ -1,7 +1,9 @@
 <div align="center">
 <h1> Neural Source-Filter BigVGAN </h1>
 
-Just For Fun[WIP]
+Just For Fun
+
+![nsf_bigvgan_mel](https://github.com/PlayVoice/NSF-BigVGAN/assets/16432329/9c5aa673-e853-4f49-b112-48f2b356f12c)
 
 </div>
 
@@ -25,6 +27,10 @@ data_raw
 - 1 software dependency
   
   > pip install -r requirements.txt
+
+- 2 download [release](https://github.com/PlayVoice/NSF-BigVGAN/releases/tag/debug) model, and test
+  
+  > python nsf_bigvgan_inference.py --config configs/nsf_bigvgan.yaml --model nsf_bigvgan_g.pth --wave test.wav
 
 ## Data preprocessing
 
