@@ -1,11 +1,9 @@
 <div align="center">
 <h1> Neural Source-Filter BigVGAN </h1>
-
-Just For Fun
-
-![nsf_bigvgan_mel](https://github.com/PlayVoice/NSF-BigVGAN/assets/16432329/9c5aa673-e853-4f49-b112-48f2b356f12c)
-
+    Just For Fun
 </div>
+
+![nsf_bigvgan_mel](https://github.com/PlayVoice/NSF-BigVGAN/assets/16432329/eebb8dca-a8d3-4e69-b02c-632a3a1cdd6a)
 
 ## Dataset preparation
 
