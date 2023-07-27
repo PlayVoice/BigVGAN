@@ -112,6 +112,22 @@ data_bigvgan/
 
     > python nsf_bigvgan_inference.py --config configs/nsf_bigvgan.yaml --model nsf_bigvgan_g.pth --mel test.mel.pt --pit test.csv
 
+## Augmentation of mel
+For the over smooth output of acoustic model, we use gaussian blur for mel when train vocoder
+```
+# gaussian blur
+model_b = get_gaussian_kernel(kernel_size=5, sigma=2, channels=1).to(device)
+# mel blur
+mel_b = mel[:, None, :, :]
+mel_b = model_b(mel_b)
+mel_b = torch.squeeze(mel_b, 1)
+mel_r = torch.rand(1).to(device) * 0.5
+mel_b = (1 - mel_r) * mel_b + mel_r * mel
+# generator
+optim_g.zero_grad()
+fake_audio = model_g(mel_b, pit)
+```
+![mel_gaussian_blur](https://github.com/PlayVoice/NSF-BigVGAN/assets/16432329/7fa96ef7-5e3b-4ae6-bc61-9b6da3b9d0b9)
 
 ## Source of code and References
 
