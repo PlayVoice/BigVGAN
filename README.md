@@ -94,7 +94,7 @@ data_bigvgan/
 
 - 1， export inference model
 
-    > python nsf_bigvgan_export.py --config configs/maxgan.yaml --checkpoint_path chkpt/nsf_bigvgan/***.pt
+    > python nsf_bigvgan_export.py --config configs/nsf_bigvgan.yaml --checkpoint_path chkpt/nsf_bigvgan/***.pt
 
 - 2， extract mel
 
