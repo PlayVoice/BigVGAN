@@ -1,22 +1,21 @@
 import os
 import numpy as np
 import librosa
+import pyworld
 import argparse
-import parselmouth
 from omegaconf import OmegaConf
 from tqdm import tqdm
 
 
 def compute_f0(path, save, hps):
     x, sr = librosa.load(path, sr=hps.audio.sampling_rate)
-    lpad = 1024 // 160
-    rpad = lpad
-    f0 = parselmouth.Sound(x, sr).to_pitch_ac(
-        time_step=160 / sr,
-        voicing_threshold=0.5,
-        pitch_floor=30,
-        pitch_ceiling=1000).selected_array['frequency']
-    f0 = np.pad(f0, [[lpad, rpad]], mode='constant')
+    f0, t = pyworld.dio(
+        x.astype(np.double),
+        fs=sr,
+        f0_ceil=900,
+        frame_period=1000 * hps.audio.hop_length / sr,
+    )
+    f0 = pyworld.stonemask(x.astype(np.double), f0, t, fs=hps.audio.sampling_rate)
     for index, pitch in enumerate(f0):
         f0[index] = round(pitch, 1)
     np.save(save, f0, allow_pickle=False)
